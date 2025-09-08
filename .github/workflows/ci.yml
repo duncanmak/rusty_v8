@@ -27,7 +27,7 @@ jobs:
         !contains(github.event.pull_request.labels.*.name, 'no-fail-fast') }}
       matrix:
         config:
-          - os: 'windows-11-arm'
+          - os: 'windows-2022'
             target: aarch64-pc-windows-msvc
             variant: release # Note: we do not support windows debug builds.
             v8_enable_pointer_compression: false
