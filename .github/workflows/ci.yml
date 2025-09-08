@@ -84,7 +84,7 @@ jobs:
           echo "QEMU_LD_PREFIX=/usr/aarch64-linux-gnu" >> ${GITHUB_ENV}
 
       - name: Install cross compilation toolchain
-        if: matrix.config.target == 'aarch64-pc=windows-msvc'
+        if: matrix.config.target == 'aarch64-pc-windows-msvc'
         run: |
           rustup target add aarch64-pc-windows-msvc
 
