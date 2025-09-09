@@ -258,13 +258,13 @@ fn build_v8(is_asan: bool) {
     }
   }
   // cross-compilation setup
-  if target_arch == "aarch64" {
+  if target_arch == "aarch64" && target_os == "linux" {
     gn_args.push(r#"target_cpu="arm64""#.to_string());
     gn_args.push("use_sysroot=true".to_string());
     maybe_install_sysroot("arm64");
     maybe_install_sysroot("amd64");
   }
-  if target_arch == "arm" {
+  if target_arch == "arm" && target_os == "linux" {
     gn_args.push(r#"target_cpu="arm""#.to_string());
     gn_args.push(r#"v8_target_cpu="arm""#.to_string());
     gn_args.push("use_sysroot=true".to_string());
