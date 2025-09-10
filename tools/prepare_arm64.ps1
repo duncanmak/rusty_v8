@@ -24,8 +24,9 @@ function Main {
     # Extract dbghelp.dll from the MSI
     &"lessmsi" "x" "$driveLetter\Installers\X64 Debuggers And Tools-x64_en-us.msi" "$env:TEMP\"
 
-    Copy-Item -Path "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
-              -Destination "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll"
+    $source = "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
+    $destination = "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll"
+    Copy-Item $source $destination
 
     Dismount-DiskImage -ImagePath $isoPath
 }
