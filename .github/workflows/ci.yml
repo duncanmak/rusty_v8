@@ -105,7 +105,7 @@ jobs:
       - name: Prepare build environment (Windows ARM64)
         if: matrix.config.target == 'aarch64-pc-windows-msvc'
         shell: pwsh
-        run: ./scripts/prepare_arm64.ps1
+        run: ./tools/prepare_arm64.ps1
 
       - name: Install and start sccache
         shell: pwsh

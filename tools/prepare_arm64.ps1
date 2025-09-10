@@ -17,6 +17,7 @@ function Get-ISO {
 
 function Main {
     $driveLetter = Get-ISO
+
     # install lessmsi using chocolatey
     &"choco" install lessmsi -y
 
