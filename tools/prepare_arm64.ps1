@@ -26,7 +26,7 @@ function Main {
 
     $source = "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
     $destination = "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll"
-    Copy-Item $source $destination
+    Copy-Item $source $destination -Force
 
     Dismount-DiskImage -ImagePath $isoPath
 }
