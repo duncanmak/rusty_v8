@@ -25,8 +25,8 @@ function Main {
     &"lessmsi" "x" "$driveLetter\Installers\X64 Debuggers And Tools-x64_en-us.msi" "$env:TEMP\"
 
     $source = "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
-    $destination = "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll"
-    Copy-Item $source $destination -Force
+    $destination = "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\"
+    Copy-Item -Path $source -Destination (New-Item -type Directory -Force $destination)
 
     Dismount-DiskImage -ImagePath $isoPath
 }
