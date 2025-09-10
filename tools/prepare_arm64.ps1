@@ -22,9 +22,10 @@ function Main {
     &"choco" install lessmsi -y
 
     # Extract dbghelp.dll from the MSI
-    &"lessmsi" "x" "$driveLetter\Installers\X64 Debuggers And Tools-x64_en-us.msi" `
-               "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\"  `
-               "SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
+    &"lessmsi" "x" "$driveLetter\Installers\X64 Debuggers And Tools-x64_en-us.msi" "$env:TTEMP\"
+
+    Copy-Item -Path "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
+              -Destination "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll"
 
     Dismount-DiskImage -ImagePath $isoPath
 }
