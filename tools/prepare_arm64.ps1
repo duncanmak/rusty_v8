@@ -17,6 +17,23 @@ function Get-ISO {
     return ($mountResult | Get-Volume).DriveLetter + ":"
 }
 
+function Copy-File {
+    param (
+        [string]$source,
+        [string]$destination
+    )
+    # Use xcopy for robust copying and add error handling
+    $xcopyCmd = "xcopy `"$source`" `"$destination`" /Y /C /V"
+    $copyResult = cmd.exe /c $xcopyCmd
+
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path "$destination\dbghelp.dll")) {
+        Write-Error "Failed to copy dbghelp.dll to $destination"
+        exit 1
+    } else {
+        Write-Host "Successfully copied dbghelp.dll to $destination"
+    }
+}
+
 function Main {
     try {
         $driveLetter = Get-ISO
@@ -29,9 +46,14 @@ function Main {
 
         # Copy dbghelp.dll to the destination
         $source = "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
-        $destination = "c:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\"
+        $destination = "C:\Programs Files (x86)\Windows Kits\10\Debuggers\x64\"
 
-        Copy-Item -Path $source -Destination (New-Item -type Directory -Force $destination) -Verbose
+        # Ensure destination directory exists
+        if (-not (Test-Path $destination)) {
+            New-Item -Type Directory -Force -Path $destination | Out-Null
+        }
+
+        Copy-File $source "$destination\dbghelp.dll"
 
         # Assert that dbghelp.dll is in the right place
         if (-not (Test-Path "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll")) {
