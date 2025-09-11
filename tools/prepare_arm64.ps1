@@ -1,3 +1,7 @@
+# This script downloads and installs the x64 dbghelp.dll from the Windows SDK ISO
+# It is needed because of this note here:
+# https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/windows_build_instructions.md#Visual-Studio
+
 $isoPath = "$env:TEMP\winsdk.iso"
 
 function Get-ISO {
