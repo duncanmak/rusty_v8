@@ -35,7 +35,7 @@ function Main {
 
         # Ensure destination directory exists
         if (-not (Test-Path $destination)) {
-            New-Item -Type Directory -Force -Path $destination -Verbose -ErrorAction Stop
+            New-Item -ItemType Directory -Force -Path $destination -Verbose -ErrorAction Stop
         }
 
         Copy-Item -Path $source -Destination "$destination\dbghelp.dll" -Force -Verbose -ErrorAction Stop
@@ -44,7 +44,7 @@ function Main {
         Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll" -ErrorAction Stop
     }
     finally {
-        Dismount-DiskImage -ImagePath $isoPath
+        Dismount-DiskImage -ImagePath $isoPath > $null
     }
 }
 
