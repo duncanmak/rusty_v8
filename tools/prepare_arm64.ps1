@@ -50,16 +50,13 @@ function Main {
 
         # Ensure destination directory exists
         if (-not (Test-Path $destination)) {
-            New-Item -Type Directory -Force -Path $destination | Out-Null
+            New-Item -Type Directory -Force -Path $destination -Verbose -ErrorAction Stop
         }
 
-        Copy-File $source "$destination\dbghelp.dll"
+        Copy-Item -Path $source -Destination "$destination\dbghelp.dll" -Force -Verbose -ErrorAction Stop
 
         # Assert that dbghelp.dll is in the right place
-        if (-not (Test-Path "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll")) {
-            Write-Error "dbghelp.dll does not exist for x64."
-            exit 1
-        }
+        Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll" -ErrorAction Stop
     }
     finally {
         Dismount-DiskImage -ImagePath $isoPath
