@@ -23,32 +23,36 @@ function Get-ISO {
 
 function Main {
     try {
-        $driveLetter = Get-ISO
+        if (-not (Test-Path "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll")) {
+            $driveLetter = Get-ISO
 
-        # install lessmsi using chocolatey
-        &"choco" "install" "lessmsi" "-y"
+            # install lessmsi using chocolatey
+            &"choco" "install" "lessmsi" "-y"
 
-        # Extract dbghelp.dll from the MSI
-        &"lessmsi" "x" "$driveLetter\Installers\X64 Debuggers And Tools-x64_en-us.msi" "$env:TEMP\"
+            # Extract dbghelp.dll from the MSI
+            &"lessmsi" "x" "$driveLetter\Installers\X64 Debuggers And Tools-x64_en-us.msi" "$env:TEMP\"
 
-        # Copy dbghelp.dll to the destination
-        $source = "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
-        $destination = "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\"
+            # Copy dbghelp.dll to the destination
+            $source = "$env:TEMP\SourceDir\Windows Kits\10\Debuggers\x64\dbghelp.dll"
+            $destination = "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\"
 
-        Get-ChildItem $source -ErrorAction Stop
+            Get-ChildItem $source -ErrorAction Stop
 
-        # Ensure destination directory exists
-        if (-not (Test-Path $destination)) {
-            New-Item -ItemType Directory -Force -Path $destination -Verbose -ErrorAction Stop
+            # Ensure destination directory exists
+            if (-not (Test-Path $destination)) {
+                New-Item -ItemType Directory -Force -Path $destination -Verbose
+            }
+
+            Copy-Item -Path $source -Destination "$destination\dbghelp.dll" -Force -Verbose
         }
-
-        Copy-Item -Path $source -Destination "$destination\dbghelp.dll" -Force -Verbose -ErrorAction Stop
-
         # Assert that dbghelp.dll is in the right place
         Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll" -ErrorAction Stop
 
         # Add Windows/ARM64 rust toolchain
-        &"rustup" "target" "add" "aarch64-pc-windows-msvc"
+        if (-not (Test-Path "third_party\rust-toolchain")) {
+            New-Item -ItemType Directory -Force -Path "third_party\rust-toolchain" -Verbose | Out-Null
+            Copy-Item -Path "$HOME\.rustup\toolchains\stable-aarch64-pc-windows-msvc\*" -Destination "third_party\rust-toolchain" -Recurse -Verbose
+        }
     }
     finally {
         Dismount-DiskImage -ImagePath $isoPath > $null
