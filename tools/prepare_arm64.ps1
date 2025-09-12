@@ -47,12 +47,6 @@ function Main {
         }
         # Assert that dbghelp.dll is in the right place
         Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbghelp.dll" -ErrorAction Stop
-
-        # Add Windows/ARM64 rust toolchain
-        if (-not (Test-Path "third_party\rust-toolchain")) {
-            New-Item -ItemType Directory -Force -Path "third_party\rust-toolchain" -Verbose | Out-Null
-            Copy-Item -Path "$HOME\.rustup\toolchains\stable-aarch64-pc-windows-msvc\*" -Destination "third_party\rust-toolchain" -Recurse -Verbose
-        }
     }
     finally {
         Dismount-DiskImage -ImagePath $isoPath > $null

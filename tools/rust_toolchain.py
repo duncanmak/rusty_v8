@@ -1,5 +1,6 @@
 from v8_deps import deps
 from download_file import DownloadUrl
+from pathlib import Path
 import platform
 import os
 import tempfile
@@ -52,3 +53,13 @@ def DownloadAndUnpack(url, output_dir):
 
 
 DownloadAndUnpack(url, DIR)
+
+# The Win rust-toolchain archive is currently only available for x64
+
+if host_cpu == 'arm64' and host_os == 'win':
+    # install native bindgen-cli
+    os.system(f'cargo install --root {DIR} bindgen-cli --force')
+    # copy from the native arm64 rust-toolchain overwriting the x64 binaries from the archive
+    print('Copying arm64 binaries over x64 ones...')
+    print(f'robocopy {Path.home()}\\.rustup\\toolchains\\1.89.0-aarch64-pc-windows-msvc {DIR} *.exe *.dll')
+    os.system(f'robocopy {Path.home()}\\.rustup\\toolchains\\1.89.0-aarch64-pc-windows-msvc {DIR} *.exe *.dll /S')
