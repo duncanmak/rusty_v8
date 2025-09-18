@@ -57,6 +57,9 @@ DownloadAndUnpack(url, DIR)
 # The Win rust-toolchain archive is currently only available for x64
 
 if host_cpu == 'arm64' and host_os == 'win':
+
+    # Install the nightly toolchain for arm64
+    os.system('rustup target add aarch64-pc-windows-msvc --toolchain nightly')
     # install native bindgen-cli
     os.system(f'cargo install bindgen-cli --force')
 
