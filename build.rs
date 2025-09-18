@@ -267,18 +267,6 @@ fn build_v8(is_asan: bool) {
       maybe_install_sysroot("arm64");
       maybe_install_sysroot("amd64");
     }
-
-    if target_os == "windows" {
-      let home_dir = home::home_dir().expect("Could not get home directory");
-      let sysroot = home_dir
-        .join(".rustup")
-        .join("toolchains")
-        .join("nightly-aarch64-pc-windows-msvc");
-      gn_args.push(format!(r#"rust_sysroot_absolute="{}""#, sysroot.display()));
-      gn_args.push(
-        r#"rustc_version="rustc 1.89.0 (29483883e 2025-08-04)""#.to_string(),
-      );
-    }
   }
   if target_arch == "arm" {
     gn_args.push(r#"target_cpu="arm""#.to_string());

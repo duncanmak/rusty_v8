@@ -21,16 +21,6 @@ if host_cpu == "x86_64":
 elif host_cpu == "aarch64":
     host_cpu = "arm64"
 
-# The Win rust-toolchain archive is currently only available for x64
-if host_cpu == 'arm64' and host_os == 'win':
-
-    # Install the nightly toolchain for arm64
-    os.system('rustup target add aarch64-pc-windows-msvc --toolchain nightly')
-    # install native bindgen-cli
-    os.system(f'cargo install bindgen-cli --force')
-
-    # copy from the native arm64 rust-toolchain overwriting the x64 binaries from the archive
-    # os.system(f'robocopy {Path.home()}\\.rustup\\toolchains\\nightly-aarch64-pc-windows-msvc {DIR} *.exe *.dll /S')
 
 if os.path.exists(DIR):
     print(f'{DIR}: already downloaded')
@@ -64,3 +54,17 @@ def DownloadAndUnpack(url, output_dir):
 
 
 DownloadAndUnpack(url, DIR)
+
+# The Win rust-toolchain archive is currently only available for x64
+if host_cpu == 'arm64' and host_os == 'win':
+    # Install the nightly toolchain for arm64
+    os.system('rustup target add aarch64-pc-windows-msvc --toolchain nightly')
+    # install native bindgen-cli
+    root = Path.home() / ".rustup" / "toolchains" / "nightly-aarch64-pc-windows-msvc"
+    if not (root / "bin" / "bindgen.exe").exists():
+        os.system(f'cargo install bindgen-cli --force --root {root}')
+    os.system(f'robocopy {root} {DIR} *.exe *.dll /S')
+    # one liner to write version file
+    with open(os.path.join(DIR, 'VERSION'), 'w') as f:
+        version = os.popen(f'{root / "bin" / "rustc.exe"} -V').read().strip()
+        f.write(version)
