@@ -9,10 +9,6 @@ import sys
 
 DIR = 'third_party/rust-toolchain'
 
-if os.path.exists(DIR):
-    print(f'{DIR}: already downloaded')
-    sys.exit()
-
 host_os = platform.system().lower()
 if host_os == "darwin":
     host_os = "mac"
@@ -24,6 +20,21 @@ if host_cpu == "x86_64":
     host_cpu = "x64"
 elif host_cpu == "aarch64":
     host_cpu = "arm64"
+
+# The Win rust-toolchain archive is currently only available for x64
+if host_cpu == 'arm64' and host_os == 'win':
+
+    # Install the nightly toolchain for arm64
+    os.system('rustup target add aarch64-pc-windows-msvc --toolchain nightly')
+    # install native bindgen-cli
+    os.system(f'cargo install bindgen-cli --force')
+
+    # copy from the native arm64 rust-toolchain overwriting the x64 binaries from the archive
+    # os.system(f'robocopy {Path.home()}\\.rustup\\toolchains\\nightly-aarch64-pc-windows-msvc {DIR} *.exe *.dll /S')
+
+if os.path.exists(DIR):
+    print(f'{DIR}: already downloaded')
+    sys.exit()
 
 eval_globals = {
     'host_os': host_os,
@@ -53,15 +64,3 @@ def DownloadAndUnpack(url, output_dir):
 
 
 DownloadAndUnpack(url, DIR)
-
-# The Win rust-toolchain archive is currently only available for x64
-
-if host_cpu == 'arm64' and host_os == 'win':
-
-    # Install the nightly toolchain for arm64
-    os.system('rustup target add aarch64-pc-windows-msvc --toolchain nightly')
-    # install native bindgen-cli
-    os.system(f'cargo install bindgen-cli --force')
-
-    # copy from the native arm64 rust-toolchain overwriting the x64 binaries from the archive
-    # os.system(f'robocopy {Path.home()}\\.rustup\\toolchains\\nightly-aarch64-pc-windows-msvc {DIR} *.exe *.dll /S')
