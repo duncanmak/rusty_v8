@@ -55,8 +55,10 @@ def DownloadAndUnpack(url, output_dir):
 
 DownloadAndUnpack(url, DIR)
 
+print(f"host_os: {host_os}, host_cpu: {host_cpu}")
+
 # The Win rust-toolchain archive is currently only available for x64
-if host_cpu == 'arm64' and host_os == 'win':
+if True: # host_cpu == 'arm64' and host_os == 'win':
     root = Path.home() / ".rustup" / "toolchains" / "nightly-aarch64-pc-windows-msvc"
 
     # install native bindgen-cli
