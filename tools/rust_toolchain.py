@@ -57,12 +57,30 @@ DownloadAndUnpack(url, DIR)
 
 # The Win rust-toolchain archive is currently only available for x64
 if host_cpu == 'arm64' and host_os == 'win':
-    # install native bindgen-cli
     root = Path.home() / ".rustup" / "toolchains" / "nightly-aarch64-pc-windows-msvc"
+
+    # install native bindgen-cli
     if not (root / "bin" / "bindgen.exe").exists():
+        print("Installing native bindgen-cli")
         os.system(f'cargo install bindgen-cli --force --root {root}')
-    os.system(f'robocopy {root} {DIR} *.exe *.dll /S')
-    # one liner to write version file
-    with open(os.path.join(DIR, 'VERSION'), 'w') as f:
+
+    # write version file
+    print("Writing VERSION file")
+    with open(os.path.join(root, 'VERSION'), 'w') as f:
         version = os.popen(f'{root / "bin" / "rustc.exe"} -V').read().strip()
         f.write(version)
+
+    # Replace x64 clang.dll with ARM native
+    with tempfile.TemporaryFile() as f:
+        url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.1/clang+llvm-21.1.1-aarch64-pc-windows-msvc.tar.xz"
+        DownloadUrl(url, f)
+        f.seek(0)
+        with tarfile.open(mode='r:xz', fileobj=f) as z:
+            member_path = "clang+llvm-21.1.1-aarch64-pc-windows-msvc/bin/libclang.dll"
+            dest_path = os.path.join(root, "bin", "libclang.dll")
+            member = z.getmember(member_path)
+            with z.extractfile(member) as source, open(dest_path, 'wb') as destination:
+                destination.write(source.read())
+
+    # Copy everything over
+    os.system(f'robocopy {root} {DIR} VERSION *.exe *.dll /S')
