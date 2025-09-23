@@ -28,6 +28,10 @@ def get_platform():
     elif machine == 'aarch64':
         machine = 'arm64'
 
+    if system == 'windows' and machine == 'arm64':
+        # Windows only has amd64 builds.
+        machine = 'amd64'
+
     return f'{system}-{machine}'
 
 

@@ -213,9 +213,15 @@ fn build_v8(is_asan: bool) {
     "v8_enable_pointer_compression={}",
     env::var("CARGO_FEATURE_V8_ENABLE_POINTER_COMPRESSION").is_ok()
   ));
+  gn_args.push(format!(
+    "v8_enable_v8_checks={}",
+    env::var("CARGO_FEATURE_V8_ENABLE_V8_CHECKS").is_ok()
+  ));
   // Fix GN's host_cpu detection when using x86_64 bins on Apple Silicon
-  if cfg!(target_os = "macos") && cfg!(target_arch = "aarch64") {
-    gn_args.push("host_cpu=\"arm64\"".to_string());
+  if cfg!(target_arch = "aarch64") {
+    if cfg!(target_os = "macos") || cfg!(target_os = "windows") {
+      gn_args.push("host_cpu=\"arm64\"".to_string());
+    }
   }
 
   if env::var_os("DISABLE_CLANG").is_some() {
@@ -256,9 +262,11 @@ fn build_v8(is_asan: bool) {
   // cross-compilation setup
   if target_arch == "aarch64" {
     gn_args.push(r#"target_cpu="arm64""#.to_string());
-    gn_args.push("use_sysroot=true".to_string());
-    maybe_install_sysroot("arm64");
-    maybe_install_sysroot("amd64");
+    if target_os == "linux" {
+      gn_args.push("use_sysroot=true".to_string());
+      maybe_install_sysroot("arm64");
+      maybe_install_sysroot("amd64");
+    }
   }
   if target_arch == "arm" {
     gn_args.push(r#"target_cpu="arm""#.to_string());
